@@ -125,7 +125,7 @@ public class UsuarioDAO {
         return listaUsuarios;
     }
 
-    public boolean checkLogin(String usuario, String senha) {//criando uma lista pra mostrar no jTable, utilizando SELECT do bd
+    public boolean checkLogin(String usuario, String senha) {// utilizando SELECT do bd
         Connection con = ModuloConexao.getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -176,7 +176,7 @@ public class UsuarioDAO {
         return check;
     }
 
-    public boolean existsCPF(String cpf) {//Verificando se existe alguem com esse usuario
+    public boolean existsCPF(String cpf) {//Verificando se existe alguem com esse cpf
         Connection con = ModuloConexao.getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
