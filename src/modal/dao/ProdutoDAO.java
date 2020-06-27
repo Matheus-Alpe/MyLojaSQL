@@ -145,7 +145,7 @@ public class ProdutoDAO {
 
         Produto produto = new Produto(); //instanciado fora pra poder retornar
         try {
-            stmt = con.prepareStatement("SELECT * FROM produto WHERE id LIKE ? AND qtd > 0");
+            stmt = con.prepareStatement("SELECT * FROM produto WHERE id = ? AND qtd > 0");
             stmt.setString(1, id+"%");
             rs = stmt.executeQuery();
 

@@ -32,7 +32,11 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
         txtCPF.setFocusable(false);
         txtDescricao.setFocusable(false);
         txtPreco.setFocusable(false);
+        txtQtdEstoque.setFocusable(false);
 
+        txtDescricao.setEnabled(false);
+        txtPreco.setEnabled(false);
+        txtQtdEstoque.setEnabled(false);
         //desatibilitando edição de texto nos campos
         txtNome.setEditable(false);
         txtNasc.setEditable(false);
@@ -46,6 +50,8 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
         btnExcluirProduto.setEnabled(false);
         btnInserirProduto.setEnabled(false);
         btnFinalizaVenda.setEnabled(false);
+
+        btnCancelar.setVisible(false);
 
         //desativando o foco na tabela
         tableProdutosCad.setFocusable(false);
@@ -81,6 +87,7 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
         ProdutoDAO pDao = new ProdutoDAO();
         Produto p = pDao.umProduto(id);
         if (p.getId() != 0) {
+            txtQtdEstoque.setText("" + p.getQtd());
             txtDescricao.setText(p.getDescricao());
             txtPreco.setText("" + p.getPreco());
             return true;
@@ -106,13 +113,14 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
         txtCPF.setEnabled(b);
 
         txtBuscaProdutoID.setEnabled(b);
-        txtQuantidadeDesejada.setEnabled(b);
+
         statusCamposProduto(!b);
     }
 
     private void statusCamposProduto(boolean b) {
-        txtDescricao.setEnabled(b);
-        txtPreco.setEnabled(b);
+        txtQuantidadeDesejada.setEnabled(b);
+        //txtDescricao.setEnabled(b);
+        //txtPreco.setEnabled(b);
     }
 
     void statusPainelCliente(boolean b) {
@@ -157,6 +165,10 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
         txtQuantidadeDesejada = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableProdutosCad = new javax.swing.JTable();
+        btnBuscarProd = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
+        txtQtdEstoque = new javax.swing.JTextField();
+        btnCancelar = new javax.swing.JButton();
         btnFinalizaVenda = new javax.swing.JButton();
 
         setClosable(true);
@@ -214,7 +226,7 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
                         .addComponent(txtBuscaID, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnBuscar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -276,9 +288,9 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
 
         jLabel9.setText("Busca: ID Produto:");
 
-        txtBuscaProdutoID.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtBuscaProdutoIDKeyReleased(evt);
+        txtBuscaProdutoID.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtBuscaProdutoIDFocusGained(evt);
             }
         });
 
@@ -293,11 +305,11 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "ID", "Descrição", "Quantidade", "Preço"
+                "ID", "qtEstoque", "Descrição", "qtDesejada", "Preço"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -321,9 +333,28 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
         if (tableProdutosCad.getColumnModel().getColumnCount() > 0) {
             tableProdutosCad.getColumnModel().getColumn(0).setResizable(false);
             tableProdutosCad.getColumnModel().getColumn(0).setPreferredWidth(0);
-            tableProdutosCad.getColumnModel().getColumn(2).setResizable(false);
-            tableProdutosCad.getColumnModel().getColumn(2).setPreferredWidth(0);
+            tableProdutosCad.getColumnModel().getColumn(1).setResizable(false);
+            tableProdutosCad.getColumnModel().getColumn(1).setPreferredWidth(0);
+            tableProdutosCad.getColumnModel().getColumn(3).setResizable(false);
+            tableProdutosCad.getColumnModel().getColumn(3).setPreferredWidth(0);
         }
+
+        btnBuscarProd.setText("Buscar");
+        btnBuscarProd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarProdActionPerformed(evt);
+            }
+        });
+
+        jLabel10.setText("Qtd Estoque:");
+
+        btnCancelar.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelCadProdLayout = new javax.swing.GroupLayout(panelCadProd);
         panelCadProd.setLayout(panelCadProdLayout);
@@ -344,6 +375,8 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
                     .addGroup(panelCadProdLayout.createSequentialGroup()
                         .addGroup(panelCadProdLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(panelCadProdLayout.createSequentialGroup()
+                                .addComponent(btnCancelar)
+                                .addGap(18, 18, 18)
                                 .addComponent(btnAtualizarItem, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnExcluirProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -353,11 +386,17 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
                                 .addComponent(jLabel9)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtBuscaProdutoID, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(39, 39, 39)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnBuscarProd)
+                                .addGap(18, 18, 18)
                                 .addComponent(jLabel19)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtQuantidadeDesejada, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(202, 202, 202)))
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel10)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtQtdEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(55, 55, 55)))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(panelCadProdLayout.createSequentialGroup()
                         .addComponent(jScrollPane1)
@@ -371,7 +410,10 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
                     .addComponent(jLabel19)
                     .addComponent(jLabel9)
                     .addComponent(txtBuscaProdutoID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtQuantidadeDesejada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtQuantidadeDesejada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBuscarProd)
+                    .addComponent(jLabel10)
+                    .addComponent(txtQtdEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(panelCadProdLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
@@ -382,7 +424,8 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
                 .addGroup(panelCadProdLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnInserirProduto)
                     .addComponent(btnExcluirProduto)
-                    .addComponent(btnAtualizarItem))
+                    .addComponent(btnAtualizarItem)
+                    .addComponent(btnCancelar))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
                 .addContainerGap())
@@ -425,7 +468,7 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(panelCadProd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnFinalizaVenda, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                .addComponent(btnFinalizaVenda, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
                 .addGap(6, 6, 6))
         );
 
@@ -460,7 +503,7 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
         if (!txtBuscaProdutoID.getText().equals("") && !txtQuantidadeDesejada.getText().equals("")) {
             DefaultTableModel dtmProdutos = (DefaultTableModel) tableProdutosCad.getModel();
             Double valorTotal = valorProdMultQtd(txtPreco.getText(), txtQuantidadeDesejada.getText());
-            Object[] dados = {txtBuscaProdutoID.getText(), txtDescricao.getText(), txtQuantidadeDesejada.getText(), valorTotal};
+            Object[] dados = {txtBuscaProdutoID.getText(), txtQtdEstoque.getText(), txtDescricao.getText(), txtQuantidadeDesejada.getText(), valorTotal};
             dtmProdutos.addRow(dados);
 
             btnFinalizaVenda.setEnabled(true);
@@ -468,11 +511,11 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
             statusCamposProduto(false);
             txtBuscaProdutoID.setText("");
             txtDescricao.setText("");
+            txtQtdEstoque.setText("");
             txtQuantidadeDesejada.setText("");
             txtPreco.setText("");
 
-            btnExcluirProduto.setEnabled(true);
-
+            btnInserirProduto.setEnabled(false);
             System.out.println("Dentro do btn INSERIR: " + tableProdutosCad.getRowCount());
         } else {
             JOptionPane.showMessageDialog(null, "Preencha todos campos.");
@@ -482,23 +525,40 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
     private void btnAtualizarItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtualizarItemActionPerformed
 
         if (tableProdutosCad.getSelectedRow() != -1) {
+            int desejado = Integer.parseInt(txtQuantidadeDesejada.getText());
+            int qtEstoque = Integer.parseInt(txtQtdEstoque.getText());
 
-            tableProdutosCad.setValueAt(txtBuscaProdutoID.getText(), tableProdutosCad.getSelectedRow(), 0);
-            tableProdutosCad.setValueAt(txtDescricao.getText(), tableProdutosCad.getSelectedRow(), 1);
-            tableProdutosCad.setValueAt(txtQuantidadeDesejada.getText(), tableProdutosCad.getSelectedRow(), 2);
+            if (desejado <= qtEstoque && desejado > 0) {
+                tableProdutosCad.setValueAt(txtBuscaProdutoID.getText(), tableProdutosCad.getSelectedRow(), 0);
+                tableProdutosCad.setValueAt(txtQtdEstoque.getText(), tableProdutosCad.getSelectedRow(), 1);
+                tableProdutosCad.setValueAt(txtDescricao.getText(), tableProdutosCad.getSelectedRow(), 2);
+                tableProdutosCad.setValueAt(txtQuantidadeDesejada.getText(), tableProdutosCad.getSelectedRow(), 3);
 
-            Double valorTotal = valorProdMultQtd(txtPreco.getText(), txtQuantidadeDesejada.getText());
-            tableProdutosCad.setValueAt(valorTotal, tableProdutosCad.getSelectedRow(), 3);
+                Double valorTotal = valorProdMultQtd(txtPreco.getText(), txtQuantidadeDesejada.getText());
+                tableProdutosCad.setValueAt(valorTotal, tableProdutosCad.getSelectedRow(), 4);
 
-            txtBuscaProdutoID.setEnabled(true);
-            txtBuscaProdutoID.setText("");
-            txtDescricao.setText("");
-            txtQuantidadeDesejada.setText("");
-            txtPreco.setText("");
+                txtBuscaProdutoID.setEnabled(true);
+                txtBuscaProdutoID.setText("");
+                txtDescricao.setText("");
+                txtQtdEstoque.setText("");
+                txtQuantidadeDesejada.setText("");
+                txtPreco.setText("");
+                
+                txtQuantidadeDesejada.setEnabled(false);
 
-            btnAtualizarItem.setEnabled(false);
+                btnAtualizarItem.setEnabled(false);
+                btnExcluirProduto.setEnabled(false);
 
-            tableProdutosCad.clearSelection();
+                btnBuscarProd.setEnabled(true);
+                btnCancelar.setVisible(false);
+
+                tableProdutosCad.clearSelection();
+            } else if (desejado > qtEstoque) {
+                JOptionPane.showMessageDialog(null, "Quantidade maior que o disponível!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Digite valor válido!");
+            }
+
         }
 
     }//GEN-LAST:event_btnAtualizarItemActionPerformed
@@ -509,25 +569,27 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
             DefaultTableModel dtm = (DefaultTableModel) tableProdutosCad.getModel();
             dtm.removeRow(tableProdutosCad.getSelectedRow());
 
-            txtBuscaProdutoID.setEnabled(true);
-
-            txtBuscaProdutoID.setText("");
-            txtDescricao.setText("");
-            txtQuantidadeDesejada.setText("");
-            txtPreco.setText("");
-
-            tableProdutosCad.clearSelection();
-            btnInserirProduto.setEnabled(false);
-            btnAtualizarItem.setEnabled(false);
-
             if (tableProdutosCad.getRowCount() == 0) {
                 btnFinalizaVenda.setEnabled(false);
             }
         }
         txtBuscaProdutoID.setText("");
         txtDescricao.setText("");
+        txtQtdEstoque.setText("");
         txtQuantidadeDesejada.setText("");
         txtPreco.setText("");
+
+        txtBuscaProdutoID.setEnabled(true);
+        btnBuscarProd.setEnabled(true);
+        
+        txtQuantidadeDesejada.setEnabled(false);
+        
+        tableProdutosCad.clearSelection();
+        btnInserirProduto.setEnabled(false);
+        btnAtualizarItem.setEnabled(false);
+        btnExcluirProduto.setEnabled(false);
+        
+        btnCancelar.setVisible(false);
     }//GEN-LAST:event_btnExcluirProdutoActionPerformed
 
     private boolean jaEstaNaTabela(String valor) {
@@ -538,43 +600,7 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
         }
         return false;
     }
-    private void txtBuscaProdutoIDKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscaProdutoIDKeyReleased
-        if (evt.getKeyCode() != KeyEvent.VK_ENTER) {
-            if (evt.getKeyCode() != KeyEvent.VK_BACK_SPACE && evt.getKeyCode() != KeyEvent.VK_SPACE) {
-                if (txtBuscaProdutoID.getText().matches("[0-9]+")) {
-                    if (!jaEstaNaTabela(txtBuscaProdutoID.getText())) {
 
-                        if (acharUmProduto(txtBuscaProdutoID.getText())) {
-                            statusCamposProduto(true);
-
-                        } else {
-                            statusCamposProduto(false);
-                            txtBuscaProdutoID.setText("");
-                            txtDescricao.setText("");
-                            txtPreco.setText("");
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Produto ja inserido no Carrinho de Compra.");
-                        statusCamposProduto(false);
-                        txtBuscaProdutoID.setText("");
-                        txtDescricao.setText("");
-                        txtPreco.setText("");
-                    }
-                } else {
-                    statusCamposProduto(false);
-                    txtBuscaProdutoID.setText("");
-                    txtDescricao.setText("");
-                    txtPreco.setText("");
-                }
-
-            } else {
-                statusCamposProduto(false);
-                txtBuscaProdutoID.setText("");
-                txtDescricao.setText("");
-                txtPreco.setText("");
-            }
-        }
-    }//GEN-LAST:event_txtBuscaProdutoIDKeyReleased
     private void verificandoEdefinindoTexto() { // metodo feito para economizar linhas em alguns blocos
         if (tableProdutosCad.getSelectedColumn() != -1) {
 
@@ -584,27 +610,33 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
             } */
             //definindo texto com objeto de cada linha
             txtBuscaProdutoID.setText("" + tableProdutosCad.getValueAt(tableProdutosCad.getSelectedRow(), 0));
-            txtDescricao.setText("" + tableProdutosCad.getValueAt(tableProdutosCad.getSelectedRow(), 1));
-            txtQuantidadeDesejada.setText("" + tableProdutosCad.getValueAt(tableProdutosCad.getSelectedRow(), 2));
+            txtQtdEstoque.setText("" + tableProdutosCad.getValueAt(tableProdutosCad.getSelectedRow(), 1));
+            txtDescricao.setText("" + tableProdutosCad.getValueAt(tableProdutosCad.getSelectedRow(), 2));
+            txtQuantidadeDesejada.setText("" + tableProdutosCad.getValueAt(tableProdutosCad.getSelectedRow(), 3));
             acharPrecoOriginal(txtBuscaProdutoID.getText());
 
             //desativando botão cadastrar
             btnInserirProduto.setEnabled(false);
-            //ativando botão atualizar e excluir
+
             btnExcluirProduto.setEnabled(true);
             btnAtualizarItem.setEnabled(true);
 
+            btnCancelar.setVisible(true);
         }
     }
 
     private void tableProdutosCadKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableProdutosCadKeyReleased
         verificandoEdefinindoTexto();
+        txtQuantidadeDesejada.setEnabled(true);
         txtBuscaProdutoID.setEnabled(false);
+        btnBuscarProd.setEnabled(false);
     }//GEN-LAST:event_tableProdutosCadKeyReleased
 
     private void tableProdutosCadMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableProdutosCadMouseClicked
         verificandoEdefinindoTexto();
+        txtQuantidadeDesejada.setEnabled(true);
         txtBuscaProdutoID.setEnabled(false);
+        btnBuscarProd.setEnabled(false);
     }//GEN-LAST:event_tableProdutosCadMouseClicked
 
     public boolean verificaQtdEstoque(String id, String qtdDesejada) {
@@ -671,7 +703,7 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
         double soma = 0.0;
 
         for (int i = 0; i < tableProdutosCad.getRowCount(); i++) {
-            double valorProd = (double) tableProdutosCad.getValueAt(i, 3);
+            double valorProd = (double) tableProdutosCad.getValueAt(i, 4);
             soma += valorProd;
         }
 
@@ -687,7 +719,7 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
 
         for (int i = 0; i < tableProdutosCad.getRowCount(); i++) {
             id = "" + tableProdutosCad.getModel().getValueAt(i, 0);
-            qtd = "" + tableProdutosCad.getValueAt(i, 2);
+            qtd = "" + tableProdutosCad.getValueAt(i, 3);
             p.setId(Integer.parseInt(id));
 
             int qtdInt = Integer.parseInt(qtd);
@@ -701,7 +733,6 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
             pdao.updateQtd(p);
         }
 
-        
     }
 
 
@@ -725,14 +756,76 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_btnFinalizaVendaActionPerformed
 
+    private void btnBuscarProdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarProdActionPerformed
+
+        if (txtBuscaProdutoID.getText().matches("[0-9]+")) {
+            if (!jaEstaNaTabela(txtBuscaProdutoID.getText())) {
+
+                if (acharUmProduto(txtBuscaProdutoID.getText())) {
+                    statusCamposProduto(true);
+
+                } else {
+                    statusCamposProduto(false);
+                    txtBuscaProdutoID.setText("");
+                    txtDescricao.setText("");
+                    txtQtdEstoque.setText("");
+                    txtPreco.setText("");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Produto ja inserido no Carrinho de Compra.");
+                statusCamposProduto(false);
+                txtBuscaProdutoID.setText("");
+                txtDescricao.setText("");
+                txtQtdEstoque.setText("");
+                txtPreco.setText("");
+            }
+        } else {
+            statusCamposProduto(false);
+            txtBuscaProdutoID.setText("");
+            txtDescricao.setText("");
+            txtQtdEstoque.setText("");
+            txtPreco.setText("");
+        }
+    }//GEN-LAST:event_btnBuscarProdActionPerformed
+
+    private void txtBuscaProdutoIDFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtBuscaProdutoIDFocusGained
+        statusCamposProduto(false);
+        btnInserirProduto.setEnabled(false);
+        txtQuantidadeDesejada.setText("");
+        txtDescricao.setText("");
+        txtQtdEstoque.setText("");
+        txtPreco.setText("");
+    }//GEN-LAST:event_txtBuscaProdutoIDFocusGained
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        tableProdutosCad.clearSelection();
+        txtBuscaProdutoID.setText("");
+        txtQuantidadeDesejada.setText("");
+        txtDescricao.setText("");
+        txtQtdEstoque.setText("");
+        txtPreco.setText("");
+
+        txtQuantidadeDesejada.setEnabled(false);
+
+        btnAtualizarItem.setEnabled(false);
+        btnExcluirProduto.setEnabled(false);
+        btnCancelar.setVisible(false);
+
+        txtBuscaProdutoID.setEnabled(true);
+        btnBuscarProd.setEnabled(true);
+    }//GEN-LAST:event_btnCancelarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAtualizarItem;
     private javax.swing.JButton btnBuscar;
+    private javax.swing.JButton btnBuscarProd;
+    private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnExcluirProduto;
     private javax.swing.JButton btnFinalizaVenda;
     private javax.swing.JButton btnInserirProduto;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
@@ -757,6 +850,7 @@ public class TelaEfetuarVenda extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtNasc;
     private javax.swing.JTextField txtNome;
     private javax.swing.JTextField txtPreco;
+    private javax.swing.JTextField txtQtdEstoque;
     private javax.swing.JTextField txtQuantidadeDesejada;
     // End of variables declaration//GEN-END:variables
 }

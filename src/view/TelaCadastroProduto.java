@@ -10,10 +10,8 @@ import javax.swing.table.DefaultTableModel;
 import modal.bean.Produto;
 import modal.dao.ProdutoDAO;
 
-
 public class TelaCadastroProduto extends javax.swing.JInternalFrame {
 
-    
     public TelaCadastroProduto() {
         initComponents();
         btnAtualizarItem.setEnabled(false);
@@ -364,16 +362,17 @@ public class TelaCadastroProduto extends javax.swing.JInternalFrame {
             Produto p = new Produto();
             ProdutoDAO prodDAO = new ProdutoDAO();
 
-            p.setDescricao(txtDescricao.getText());
-            p.setTipo(Integer.parseInt(txtCodigoTipo.getText()));
-            p.setQtd(Integer.parseInt(txtQuantidade.getText()));
-            p.setPreco(Double.parseDouble(txtPreco.getText()));
-            prodDAO.create(p);
+            try {
+                p.setDescricao(txtDescricao.getText());
+                p.setTipo(Integer.parseInt(txtCodigoTipo.getText()));
+                p.setQtd(Integer.parseInt(txtQuantidade.getText()));
+                p.setPreco(Double.parseDouble(txtPreco.getText()));
+                prodDAO.create(p);
+            }catch(Exception e){
+                JOptionPane.showMessageDialog(null, "Insira valores válidos");
+            }
 
             readJTable();
-//            DefaultTableModel dtmProdutos = (DefaultTableModel) tableProdutosCad.getModel();
-//            Object[] dados = {txtCodigoTipo.getText(),txtDescricao.getText(),txtQuantidade.getText(),txtPreco.getText()};
-//            dtmProdutos.addRow(dados);
 
             txtCodigoTipo.setText("");
             txtDescricao.setText("");

@@ -156,7 +156,7 @@ public class ClienteDAO {
         Cliente cliente = new Cliente();
         try {
             stmt = con.prepareStatement("SELECT * FROM cliente WHERE status = 'ativo' AND id LIKE ?");
-            stmt.setString(1, "%"+i+"%");
+            stmt.setString(1, i+"%");
             rs = stmt.executeQuery();
 
             if(rs.next()) {//quando nao tiver mais resultado ele retorna false e o loop para
